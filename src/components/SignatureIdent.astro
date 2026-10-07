@@ -15,7 +15,7 @@ import { toPath, STROKE } from '../../scripts/centerline.mjs';
 const ink = readFileSync(join(process.cwd(), 'public/brand/signature.svg'), 'utf8').match(/ d="([^"]+)"/)![1];
 const pen = toPath();
 ---
-<div id="ident" class="ident">
+<div id="ident" class="ident-overlay">
   <div class="ident-fog" aria-hidden="true"><span class="f1"></span><span class="f2"></span><span class="f3"></span><span class="f4"></span></div>
   <div class="ident-glow" aria-hidden="true"></div>
   <svg class="ident-sig" viewBox="0 0 1876 855" aria-hidden="true" focusable="false">
@@ -30,9 +30,9 @@ const pen = toPath();
 </div>
 
 <style is:global>
-  .ident { display: none; }
+  .ident-overlay { display: none; }
   html.ident body { overflow: hidden; }
-  html.ident .ident {
+  html.ident .ident-overlay {
     display: flex; align-items: center; justify-content: center;
     position: fixed; inset: 0; z-index: 90; background: #f4f2ed; overflow: hidden; cursor: pointer;
   }
@@ -145,7 +145,7 @@ const pen = toPath();
     pen.style.strokeDasharray = `${len}`;
     pen.style.strokeDashoffset = `${len}`;
     at(300, () => {
-      draw = pen.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 2200, easing: ease, fill: 'forwards' });
+      draw = pen.animate([{ strokeDashoffset: `${len}px` }, { strokeDashoffset: '0px' }], { duration: 2200, easing: ease, fill: 'forwards' });
     });
     // Beat 2: hold, a faint grenadine bloom behind the ink.
     at(2500, () => {

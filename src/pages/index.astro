@@ -141,17 +141,23 @@ const offers = (await getCollection('offers')).sort((a, b) => a.data.order - b.d
   .promise { font-size: clamp(1.45rem, 1.1rem + 1.6vw, 2.3rem); line-height: 1.25; margin: 0; }
   .promise em { font-style: italic; color: var(--porcelain); }
 
-  @media (min-width: 860px) {
+  /* Tablets: keep the name above the fold; crop sky from the top so the date stamp stays. */
+  @media (min-width: 700px) and (max-width: 1099px) {
+    .hero-sky img { aspect-ratio: auto; height: 58svh; object-position: 50% 80%; }
+    .hero-wash { height: 10%; }
+  }
+  /* Overlay layout only when the copy column clears the sunflower. */
+  @media (min-width: 1100px) {
     .hero { min-height: min(92svh, 900px); display: grid; align-items: center; }
     .hero-sky { position: absolute; inset: 0; overflow: hidden; }
     .hero-sky img { height: 100%; aspect-ratio: auto; object-position: 50% 85%; }
     .hero-wash { height: 14%; }
-    .hero-grid { position: relative; display: grid; grid-template-columns: 1fr minmax(0, 560px); }
+    .hero-grid { position: relative; display: grid; grid-template-columns: 1fr minmax(0, 440px); }
     .hero-copy { grid-column: 2; padding: 48px 0; position: relative; }
     /* A bank of gateway fog behind the copy so ink reads on bright cloud. */
     .hero-copy::before {
-      content: ''; position: absolute; inset: -18% -22%; z-index: -1; border-radius: 50%;
-      background: radial-gradient(ellipse at 50% 50%, #f9f9f7f0, #f9f9f7b8 46%, #f9f9f700 72%);
+      content: ''; position: absolute; inset: -6% -14% -6% -2%; z-index: -1; border-radius: 50%;
+      background: radial-gradient(ellipse at 50% 50%, #f9f9f7cc, #f9f9f780 46%, #f9f9f700 72%);
       filter: blur(20px);
     }
   }

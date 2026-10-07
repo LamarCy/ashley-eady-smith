@@ -14,7 +14,7 @@ const { href, who, role, label, face = 'a', external = false } = Astro.props;
 <a class="note-cta" href={href} {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
   <span class="eggwrap">
     <span class="note is-photo">
-      <img src={`/notes/note-blank-${face}.webp`} alt="" width="304" height="304" loading="lazy" decoding="async" />
+      <img src={`/notes/note-blank-${face}.webp`} alt="" width="366" height="342" loading="lazy" decoding="async" />
       <span class="hand">
         <span class="who">{who}</span>
         {role && <span class="role">{role}</span>}
