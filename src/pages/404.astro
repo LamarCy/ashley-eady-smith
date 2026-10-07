@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import NoteCTA from '../components/NoteCTA.astro';
+---
+<Base title="Page not found" description="This page isn't here.">
+  <section class="section">
+    <div class="wrap fade-up">
+      <span class="eyebrow">404</span>
+      <h1>This page has <em>wandered</em> off.</h1>
+      <p class="lede" style="margin:22px 0 48px">Let's get you back to the light.</p>
+      <div class="notes" style="justify-content:flex-start">
+        <NoteCTA href="/" who="Go home" role="start again" label="Home" face="b" />
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "aes-dev", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "4331"], "port": 4331 },
+    { "name": "aes-preview", "runtimeExecutable": "npm", "runtimeArgs": ["run", "preview", "--", "--port", "4332"], "port": 4332 }
+  ]
+}

@@ -1,0 +1,68 @@
+---
+// Numbered track rows, as on cprice.studio/ashley. Each row opens to an inline
+// player: a youtube-nocookie embed when youtubeId is set, else native <audio>.
+import type { CollectionEntry } from 'astro:content';
+import YouTubeLite from './YouTubeLite.astro';
+import NoteCTA from './NoteCTA.astro';
+
+interface Props { tracks: CollectionEntry<'music'>[]; startOpen?: boolean }
+const { tracks, startOpen = false } = Astro.props;
+const faces = ['c', 'a', 'd', 'b'] as const;
+---
+<ol class="rows tracks">
+  {tracks.map((t, i) => (
+    <li class="row">
+      <details class="track" open={startOpen && i === 0}>
+        <summary>
+          <span class="row-num">{String(i + 1).padStart(2, '0')}</span>
+          <span class="track-info">
+            <span class="row-title">{t.data.title}</span>
+            <span class="meta">{t.data.credits}</span>
+          </span>
+          <span class="track-toggle mono" aria-hidden="true"></span>
+        </summary>
+        <div class="track-player">
+          {t.data.youtubeId ? (
+            <YouTubeLite id={t.data.youtubeId} title={t.data.title} />
+          ) : t.data.audio ? (
+            <audio controls preload="none" src={t.data.audio}>
+              <a href={t.data.audio}>Download {t.data.title}</a>
+            </audio>
+          ) : (
+            <p class="meta">Recording coming soon.</p>
+          )}
+          {t.data.buyUrl && (
+            <div class="notes track-note">
+              <NoteCTA href={t.data.buyUrl} who="Own it" role={t.data.title} label="Buy the track" face={faces[i % 4]} external />
+            </div>
+          )}
+        </div>
+      </details>
+    </li>
+  ))}
+</ol>
+
+<style is:global>
+  .track summary {
+    display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 18px;
+    padding: 20px 0; cursor: pointer; list-style: none; transition: background .2s;
+  }
+  .track summary::-webkit-details-marker { display: none; }
+  .track summary:hover { background: rgba(251, 230, 160, .35); }
+  .track .row-num { text-align: right; }
+  .track-info { display: grid; gap: 2px; }
+  .track-info .row-title { display: block; }
+  .track-info .meta { color: var(--ink-light); font-size: .7rem; }
+  .track-toggle { color: var(--porcelain-deep); white-space: nowrap; }
+  .track-toggle::after { content: '▶ Play'; }
+  .track[open] .track-toggle::after { content: '— Close'; }
+  .track-player { padding: 0 0 28px 62px; display: grid; gap: 24px; justify-items: start; }
+  .track-player .yt { width: 100%; max-width: 720px; }
+  .track-player audio { width: 100%; max-width: 520px; font-family: var(--mono); }
+  .track-note { justify-content: flex-start; }
+  @media (max-width: 559px) {
+    .track summary { grid-template-columns: 28px 1fr; gap: 12px; }
+    .track-toggle { grid-column: 2; }
+    .track-player { padding-left: 0; }
+  }
+</style>

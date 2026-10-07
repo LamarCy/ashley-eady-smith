@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import TrackList from '../components/TrackList.astro';
+
+const tracks = (await getCollection('music')).sort((a, b) => a.data.order - b.data.order);
+---
+<Base title="Music" description="Original music sung by Ashley Eady Smith: folk songs written and recorded with Durrell Lamar.">
+  <section class="section">
+    <div class="wrap music-grid">
+      <div class="fade-up">
+        <span class="eyebrow">Music</span>
+        <h1>The <em>voice</em></h1>
+        <p class="lede" style="margin-top:18px">Her songs and stories. Folk, recorded at home in Atlanta with Durrell.</p>
+      </div>
+      <div>
+        <TrackList tracks={tracks} startOpen />
+        <div class="callout" style="margin-top:36px">
+          <p>A long-running collaboration built on late nights, half-finished cups of tea, and the belief that songs and pictures belong together.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .music-grid { display: grid; gap: 40px; }
+  @media (min-width: 860px) { .music-grid { grid-template-columns: 1fr 1.5fr; gap: 80px; align-items: start; } }
+</style>

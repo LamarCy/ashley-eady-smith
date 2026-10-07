@@ -1,0 +1,69 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import NoteCTA from '../components/NoteCTA.astro';
+
+const offers = await Promise.all(
+  (await getCollection('offers'))
+    .sort((a, b) => a.data.order - b.data.order)
+    .map(async (o) => ({ ...o, Content: (await render(o)).Content })),
+);
+const faces = ['a', 'b', 'c', 'd'] as const;
+const hand = {
+  product: (name: string) => ({ who: `Get ${name}`, role: 'Pocket of Prayers' }),
+  session: () => ({ who: 'Book a', role: 'session' }),
+  retreat: () => ({ who: 'Plan a', role: 'retreat' }),
+};
+---
+<Base title="Shop" description="POP: Little Pocket of Prayers by Ashley Eady Smith, one-on-one Encouragement Sessions, and group and corporate retreats.">
+  <section class="section">
+    <div class="wrap">
+      <div class="fade-up shop-head">
+        <span class="eyebrow">Shop</span>
+        <h1>Carry a little <em>courage</em></h1>
+        <p class="lede" style="margin-top:18px">A book of prayers for your pocket, an hour of encouragement, or a retreat for your whole team.</p>
+      </div>
+      <ol class="rows offers">
+        {offers.map((o, i) => (
+          <li class="row offer">
+            <span class="row-num">{String(i + 1).padStart(2, '0')}</span>
+            <div class="offer-text">
+              <h2 class="offer-name">{o.data.name}</h2>
+              <p class="offer-tag">{o.data.tagline}</p>
+              <p class="meta">{o.data.format} · <span class="price">{o.data.price}</span></p>
+              <div class="offer-body"><o.Content /></div>
+            </div>
+            <div class="notes offer-note">
+              <NoteCTA
+                href={o.data.cta_url}
+                {...hand[o.data.kind](o.data.name)}
+                label={`${o.data.cta_label} · ${o.data.price}`}
+                face={faces[i % 4]}
+                external={o.data.cta_url.startsWith('http')}
+              />
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p class="meta fine">Payments are handled securely by Stripe. Questions? <a href="/contact">Write to Ashley</a>.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .shop-head { margin-bottom: clamp(36px, 5vw, 64px); }
+  .offer { display: grid; gap: 24px; padding: 36px 0 44px; }
+  .offer .row-num { display: none; }
+  .offer-name { font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.4rem); margin-bottom: 6px; }
+  .offer-tag { font-style: italic; font-size: 1.2rem; color: var(--ink-mid); margin-bottom: 8px; }
+  .price { color: var(--porcelain-deep); }
+  .offer-body { color: var(--ink-mid); max-width: 52ch; margin-top: 14px; }
+  .offer-note { justify-content: flex-start; }
+  .fine { margin-top: 32px; }
+  .fine a { color: var(--porcelain-deep); }
+  @media (min-width: 860px) {
+    .offer { grid-template-columns: 44px minmax(0, 1fr) 260px; gap: 32px; align-items: center; }
+    .offer .row-num { display: block; text-align: right; align-self: start; padding-top: 14px; }
+    .offer-note { justify-content: center; }
+  }
+</style>

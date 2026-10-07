@@ -1,0 +1,86 @@
+---
+import Base from '../layouts/Base.astro';
+
+const interests = [
+  { value: 'pop', label: 'POP: Little Pocket of Prayers' },
+  { value: 'session', label: 'Encouragement Session' },
+  { value: 'retreat', label: 'Retreat' },
+  { value: 'speaking', label: 'Speaking' },
+  { value: 'artwork', label: 'Artwork' },
+];
+---
+<Base title="Contact" description="Write to Ashley Eady Smith about Encouragement Sessions, retreats, speaking, POP or her artwork.">
+  <section class="section">
+    <div class="wrap contact-grid">
+      <div class="fade-up">
+        <span class="eyebrow">Contact</span>
+        <h1>Say <em>hello</em></h1>
+        <p class="lede" style="margin-top:18px">Tell Ashley a little about what you're looking for. She reads every note and will write back.</p>
+        <div class="callout" style="margin-top:32px">
+          <p>For speaking, include your event date, city and audience. For a retreat, the size of your group.</p>
+        </div>
+      </div>
+
+      <form class="contact-form" name="contact" method="POST" action="/thanks" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="contact" />
+        <p class="hp" aria-hidden="true"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+        <input type="hidden" name="piece" id="piece" value="" />
+
+        <label class="field">
+          <span class="meta">Name</span>
+          <input type="text" name="name" autocomplete="name" required />
+        </label>
+        <label class="field">
+          <span class="meta">Email</span>
+          <input type="email" name="email" autocomplete="email" required />
+        </label>
+        <label class="field">
+          <span class="meta">I'm interested in</span>
+          <select name="interest" id="interest">
+            <option value="">Choose one (optional)</option>
+            {interests.map((i) => <option value={i.value}>{i.label}</option>)}
+          </select>
+        </label>
+        <p class="piece-note meta" id="piece-note" hidden></p>
+        <label class="field">
+          <span class="meta">Message</span>
+          <textarea name="message" rows="7" required></textarea>
+        </label>
+        <button class="btn" type="submit">Send to Ashley</button>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .contact-grid { display: grid; gap: 48px; }
+  @media (min-width: 860px) { .contact-grid { grid-template-columns: 1fr 1.2fr; gap: 90px; align-items: start; } }
+  .contact-form { display: grid; gap: 22px; }
+  .field { display: grid; gap: 8px; }
+  .field .meta { color: var(--ink-mid); }
+  input, select, textarea {
+    font: inherit; font-size: 1.1rem; color: var(--ink); background: var(--off-white);
+    border: 1px solid var(--rule); border-radius: 0; padding: 12px 14px; width: 100%;
+    transition: border-color .2s, background-color .2s;
+  }
+  input:hover, select:hover, textarea:hover { border-color: var(--ink-light); }
+  input:focus, select:focus, textarea:focus { outline: 3px solid var(--porcelain); outline-offset: 0; border-color: var(--porcelain); background: #fff; }
+  .hp { position: absolute; left: -9999px; }
+  .piece-note { color: var(--porcelain-deep); margin: -8px 0 0; }
+  .contact-form .btn { justify-self: start; }
+</style>
+
+<script>
+  // ?interest= preselects the dropdown; ?piece= fills the hidden field.
+  const q = new URLSearchParams(location.search);
+  const sel = document.getElementById('interest') as HTMLSelectElement | null;
+  const interest = q.get('interest');
+  if (sel && interest && [...sel.options].some((o) => o.value === interest)) sel.value = interest;
+  const piece = q.get('piece');
+  if (piece) {
+    (document.getElementById('piece') as HTMLInputElement).value = piece;
+    const note = document.getElementById('piece-note')!;
+    note.textContent = `About the piece: ${piece.replace(/-/g, ' ')}`;
+    note.hidden = false;
+  }
+</script>

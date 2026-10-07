@@ -1,0 +1,38 @@
+---
+// Click-to-load YouTube: a thumbnail and a play mark until tapped, then a
+// privacy-enhanced youtube-nocookie.com iframe. Keeps pages fast.
+interface Props { id: string; title: string; eager?: boolean }
+const { id, title, eager = false } = Astro.props;
+---
+<div class="yt" data-id={id} data-title={title}>
+  <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" width="480" height="360" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+  <button type="button" class="yt-play" aria-label={`Play: ${title}`}>
+    <svg viewBox="0 0 68 48" width="68" height="48" aria-hidden="true"><rect width="68" height="48" rx="12" fill="#111110" fill-opacity=".82"/><path d="M27 15v18l16-9z" fill="#f4f2ed"/></svg>
+  </button>
+</div>
+
+<style is:global>
+  .yt { position: relative; aspect-ratio: 16 / 9; background: #111110; overflow: hidden; }
+  .yt img { width: 100%; height: 100%; object-fit: cover; }
+  .yt iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .yt-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: none; border: 0; cursor: pointer; padding: 0; }
+  .yt-play svg { transition: transform .2s; }
+  .yt-play:hover svg, .yt-play:focus-visible svg { transform: scale(1.08); }
+  .yt-play:hover rect { fill: #00726d; fill-opacity: 1; }
+</style>
+
+<script>
+  // One delegated listener for every .yt on the page.
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as Element).closest?.('.yt-play');
+    const box = btn?.closest<HTMLElement>('.yt');
+    if (!box || box.querySelector('iframe')) return;
+    const f = document.createElement('iframe');
+    f.src = `https://www.youtube-nocookie.com/embed/${box.dataset.id}?autoplay=1&rel=0`;
+    f.title = box.dataset.title || 'YouTube video';
+    f.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+    f.allowFullscreen = true;
+    box.append(f);
+    btn!.remove();
+  });
+</script>

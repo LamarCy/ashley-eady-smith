@@ -1,0 +1,27 @@
+---
+// The three offers as sticky notes: name on the note, offer underneath in the
+// hand, price in the DM Mono label.
+import type { CollectionEntry } from 'astro:content';
+import NoteCTA from './NoteCTA.astro';
+
+interface Props { offers: CollectionEntry<'offers'>[] }
+const { offers } = Astro.props;
+const faces = ['a', 'b', 'c', 'd'] as const;
+// Handwriting is wide: keep each line short enough to fit the note.
+const hand = {
+  product: (name: string) => ({ who: `Get ${name}`, role: 'Pocket of Prayers' }),
+  session: () => ({ who: 'Sessions', role: 'of encouragement' }),
+  retreat: () => ({ who: 'Retreats', role: 'groups & teams' }),
+};
+---
+<div class="notes">
+  {offers.map((o, i) => (
+    <NoteCTA
+      href={o.data.cta_url}
+      {...hand[o.data.kind](o.data.name)}
+      label={`${o.data.name} · ${o.data.price}`}
+      face={faces[i % 4]}
+      external={o.data.cta_url.startsWith('http')}
+    />
+  ))}
+</div>

@@ -1,0 +1,157 @@
+---
+// The opening ident: Ashley's signature writes itself, holds, then shrinks into
+// the header as the site's mark. Rendered on / only; shown only when the head
+// script in Base.astro has added `html.ident` (first visit this session, JS on).
+// Without that class it is display:none, so crawlers and no-JS visitors get the
+// page as-is and the hero underneath is never blocked.
+//
+// Beats: 0 paper + fog (0–0.3s) · 1 draw-on through a pen-order mask (0.3–2.5s)
+// · 2 hold with a grenadine glow (2.5–2.9s) · 3 FLIP into the header slot while
+// the overlay fades and the hero rises (2.9–3.4s). Any click/tap/key skips to 3.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { toPath, STROKE } from '../../scripts/centerline.mjs';
+
+const ink = readFileSync(join(process.cwd(), 'public/brand/signature.svg'), 'utf8').match(/ d="([^"]+)"/)![1];
+const pen = toPath();
+---
+<div id="ident" class="ident">
+  <div class="ident-fog" aria-hidden="true"><span class="f1"></span><span class="f2"></span><span class="f3"></span><span class="f4"></span></div>
+  <div class="ident-glow" aria-hidden="true"></div>
+  <svg class="ident-sig" viewBox="0 0 1876 855" aria-hidden="true" focusable="false">
+    <defs>
+      <mask id="ident-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1876" height="855">
+        <path class="ident-pen" d={pen} fill="none" stroke="#fff" stroke-width={STROKE} stroke-linecap="round" stroke-linejoin="round" />
+      </mask>
+    </defs>
+    <path class="ident-ink" d={ink} fill="#111110" fill-rule="evenodd" mask="url(#ident-mask)" />
+  </svg>
+  <button type="button" class="ident-skip">Skip</button>
+</div>
+
+<style is:global>
+  .ident { display: none; }
+  html.ident body { overflow: hidden; }
+  html.ident .ident {
+    display: flex; align-items: center; justify-content: center;
+    position: fixed; inset: 0; z-index: 90; background: #f4f2ed; overflow: hidden; cursor: pointer;
+  }
+  html.ident .site-mark img { visibility: hidden; }
+  html.ident.ident-done .site-mark img { visibility: visible; }
+
+  .ident-fog { position: absolute; inset: 0; pointer-events: none; }
+  .ident-fog span {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 50%, #ffffffe6, #ffffff9e 42%, #fff0 72%);
+    filter: blur(44px);
+  }
+  .ident-fog .f1 { width: 58vw; height: 38vh; left: -6%; top: 12%; animation: drift-a 29s ease-in-out infinite; }
+  .ident-fog .f2 { width: 46vw; height: 30vh; right: -8%; top: 26%; animation: drift-b 36s ease-in-out infinite; }
+  .ident-fog .f3 { width: 64vw; height: 34vh; left: 14%; bottom: 6%; animation: drift-a 24s ease-in-out infinite reverse; }
+  .ident-fog .f4 { width: 38vw; height: 26vh; left: 30%; top: 2%; animation: drift-b 31s ease-in-out infinite reverse; }
+  @keyframes drift-a { 0%, to { transform: translateZ(0); } 50% { transform: translate3d(6%, -2%, 0); } }
+  @keyframes drift-b { 0%, to { transform: translateZ(0); } 50% { transform: translate3d(-7%, 2%, 0); } }
+
+  .ident-glow {
+    position: absolute; width: min(90vw, 980px); aspect-ratio: 2 / 1; border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 50%, #f48067 0%, #f4806700 68%);
+    opacity: 0; pointer-events: none;
+  }
+  .ident-sig { position: relative; width: min(84vw, 880px); height: auto; transform-origin: 50% 50%; will-change: transform; }
+  .ident-pen { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  html.ident-rm .ident-pen { stroke-dasharray: none; stroke-dashoffset: 0; }
+  html.ident-rm .ident-sig { opacity: 0; }
+
+  .ident-skip {
+    position: absolute; right: clamp(16px, 3vw, 32px); bottom: clamp(16px, 3vw, 28px);
+    background: none; border: 0; padding: 10px 6px; cursor: pointer;
+    font-family: var(--mono); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase;
+    color: rgba(17, 17, 16, .6);
+  }
+  .ident-skip:hover { color: #111110; }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const el = document.getElementById('ident');
+  if (el && root.classList.contains('ident')) run(el);
+
+  function run(el: HTMLElement) {
+    const sig = el.querySelector<SVGSVGElement>('.ident-sig')!;
+    const pen = el.querySelector<SVGPathElement>('.ident-pen')!;
+    const ink = el.querySelector<SVGPathElement>('.ident-ink')!;
+    const glow = el.querySelector<HTMLElement>('.ident-glow')!;
+    const fog = el.querySelector<HTMLElement>('.ident-fog')!;
+    const reduced = root.classList.contains('ident-rm');
+    const ease = 'cubic-bezier(.4,0,.2,1)';
+    const timers: number[] = [];
+    const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
+    let draw: Animation | undefined;
+    let leaving = false;
+
+    const finish = () => {
+      root.classList.add('ident-done');
+      try { sessionStorage.setItem('aesIdentSeen', '1'); } catch {}
+      el.remove();
+      root.classList.remove('ident', 'ident-rm');
+      removeEventListener('keydown', skip, true);
+    };
+
+    // Beat 3: FLIP the big signature into the header's signature slot.
+    const leave = () => {
+      if (leaving) return;
+      leaving = true;
+      timers.forEach(clearTimeout);
+      draw?.finish();
+      ink.removeAttribute('mask');
+      root.classList.add('ident-reveal');
+      const slot = document.querySelector('.site-mark img');
+      const from = sig.getBoundingClientRect();
+      const to = slot?.getBoundingClientRect();
+      if (to && to.width) {
+        const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+        const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+        sig.animate([{ transform: 'none' }, { transform: `translate(${dx}px, ${dy}px) scale(${to.width / from.width})` }], { duration: 500, easing: ease, fill: 'forwards' });
+      } else {
+        sig.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, fill: 'forwards' });
+      }
+      glow.animate([{ opacity: getComputedStyle(glow).opacity }, { opacity: 0 }], { duration: 300, fill: 'forwards' });
+      fog.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, easing: ease, fill: 'forwards' });
+      el.animate([{ backgroundColor: '#f4f2edff' }, { backgroundColor: '#f4f2ed00' }], { duration: 500, easing: ease, fill: 'forwards' })
+        .finished.then(finish, finish);
+    };
+
+    // Reduced motion: no draw-on, no FLIP. Fade in 600, hold 400, fade out.
+    const leaveReduced = () => {
+      if (leaving) return;
+      leaving = true;
+      timers.forEach(clearTimeout);
+      root.classList.add('ident-reveal');
+      el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: 'forwards' }).finished.then(finish, finish);
+    };
+
+    const skip = () => (reduced ? leaveReduced() : leave());
+    el.addEventListener('pointerdown', skip);
+    addEventListener('keydown', skip, true);
+
+    if (reduced) {
+      sig.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, fill: 'forwards' });
+      at(1000, leaveReduced);
+      return;
+    }
+
+    // Beat 1: write the signature.
+    const len = pen.getTotalLength();
+    pen.style.strokeDasharray = `${len}`;
+    pen.style.strokeDashoffset = `${len}`;
+    at(300, () => {
+      draw = pen.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 2200, easing: ease, fill: 'forwards' });
+    });
+    // Beat 2: hold, a faint grenadine bloom behind the ink.
+    at(2500, () => {
+      ink.removeAttribute('mask');
+      glow.animate([{ opacity: 0 }, { opacity: 0.18, offset: 0.5 }, { opacity: 0 }], { duration: 400, easing: 'ease-in-out', fill: 'forwards' });
+    });
+    at(2900, leave);
+  }
+</script>

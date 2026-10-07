@@ -1,0 +1,188 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Portrait from '../components/Portrait.astro';
+import YouTubeLite from '../components/YouTubeLite.astro';
+import ArtGallery from '../components/ArtGallery.astro';
+import TrackList from '../components/TrackList.astro';
+import OfferNotes from '../components/OfferNotes.astro';
+import NoteCTA from '../components/NoteCTA.astro';
+import { getClips } from '../lib/clips';
+import sky from '../assets/sky.jpg';
+
+const clips = await getClips();
+const clip = clips[0];
+const art = (await getCollection('art')).sort((a, b) => a.data.order - b.data.order).slice(0, 3);
+const latest = (await getCollection('music')).sort((a, b) => b.data.year - a.data.year || a.data.order - b.data.order).slice(0, 1);
+const offers = (await getCollection('offers')).sort((a, b) => a.data.order - b.data.order);
+---
+<Base
+  title="Ashley Eady Smith · Guidance, inspiration, courage, and light"
+  description="Ashley Eady Smith is a speaker, encourager, artist and singer. Encouragement Sessions, retreats, POP: Little Pocket of Prayers, and her speeches, art and music."
+>
+  <section class="hero">
+    <div class="hero-sky">
+      <Image
+        src={sky}
+        alt="A sunflower backlit against a bright, cloudy summer sky, seen from below"
+        widths={[640, 960, 1280, 1600]}
+        sizes="100vw"
+        loading="eager"
+        fetchpriority="high"
+        format="webp"
+        quality={78}
+      />
+      <div class="hero-wash" aria-hidden="true"></div>
+    </div>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Speaker · Encourager · Artist · Singer</span>
+        <h1>Ashley Eady Smith</h1>
+        <p class="promise">Guidance, inspiration, <em>courage</em>, and light.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section who">
+    <div class="wrap who-grid">
+      <div class="who-portrait"><Portrait sizes="(min-width: 860px) 36vw, 100vw" /></div>
+      <div class="who-copy">
+        <span class="eyebrow">Who I am</span>
+        <!-- ASHLEY TO REVIEW -->
+        <h2>A word of <em>courage</em>, when you need it most.</h2>
+        <p class="lede">People come to me for encouragement. I speak, I listen, and I help you find the light that is already in you, through talks, one-on-one Encouragement Sessions, and retreats for groups and teams.</p>
+        <p class="lede">I also draw, paint and sing. It all comes from the same place.</p>
+        <a class="textlink" href="/about">More about Ashley →</a>
+      </div>
+    </div>
+  </section>
+
+  {clip && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Speaking</span>
+            <h2>Hear her <em>speak</em></h2>
+          </div>
+          <a class="textlink" href="/speaking">All clips →</a>
+        </div>
+        <div class="feature-clip">
+          <YouTubeLite id={clip.videoId} title={clip.title} />
+          <div>
+            <p class="row-title">{clip.title}</p>
+            <p class="meta">{[clip.event, clip.year].filter(Boolean).join(' · ')}</p>
+            {clip.caption && <p class="clip-cap">{clip.caption}</p>}
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Art</span>
+          <h2>Drawings &amp; <em>paintings</em></h2>
+        </div>
+        <a class="textlink" href="/art">See the gallery →</a>
+      </div>
+      <ArtGallery items={art} strip />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap music-home">
+      <div>
+        <span class="eyebrow">Music</span>
+        <h2>The <em>voice</em></h2>
+        <p class="lede">Original songs, written and sung with Durrell.</p>
+        <a class="textlink" href="/music">All songs →</a>
+      </div>
+      <TrackList tracks={latest} />
+    </div>
+  </section>
+
+  <section class="section offers-home">
+    <div class="wrap">
+      <div class="section-head centered">
+        <div>
+          <span class="eyebrow">Work with Ashley</span>
+          <h2>Take a <em>note</em></h2>
+        </div>
+      </div>
+      <OfferNotes offers={offers} />
+      <p class="center"><a class="textlink" href="/shop">Details &amp; prices →</a></p>
+    </div>
+  </section>
+
+  <section class="section closing">
+    <div class="wrap closing-grid">
+      <div>
+        <h2>You were made for <em>light</em>.</h2>
+        <p class="lede">Whatever you are carrying, you don't have to carry it alone. Write to me, and let's begin.</p>
+      </div>
+      <div class="notes">
+        <NoteCTA href="/contact" who="Say hello" role="write to Ashley" label="Contact" face="d" />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { position: relative; }
+  .hero-sky { position: relative; }
+  .hero-sky img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+  .hero-wash { position: absolute; inset: auto 0 0 0; height: 22%; background: linear-gradient(to bottom, #fbe6a000, #fbe6a073 55%, var(--paper)); }
+  .hero-copy { padding: 28px 0 8px; }
+  .hero-copy h1 { margin-bottom: 14px; }
+  .promise { font-size: clamp(1.45rem, 1.1rem + 1.6vw, 2.3rem); line-height: 1.25; margin: 0; }
+  .promise em { font-style: italic; color: var(--porcelain); }
+
+  @media (min-width: 860px) {
+    .hero { min-height: min(92svh, 900px); display: grid; align-items: center; }
+    .hero-sky { position: absolute; inset: 0; overflow: hidden; }
+    .hero-sky img { height: 100%; aspect-ratio: auto; object-position: 50% 85%; }
+    .hero-wash { height: 14%; }
+    .hero-grid { position: relative; display: grid; grid-template-columns: 1fr minmax(0, 560px); }
+    .hero-copy { grid-column: 2; padding: 48px 0; position: relative; }
+    /* A bank of gateway fog behind the copy so ink reads on bright cloud. */
+    .hero-copy::before {
+      content: ''; position: absolute; inset: -18% -22%; z-index: -1; border-radius: 50%;
+      background: radial-gradient(ellipse at 50% 50%, #f9f9f7f0, #f9f9f7b8 46%, #f9f9f700 72%);
+      filter: blur(20px);
+    }
+  }
+
+  /* One slow fade-up for the hero copy. During the ident it waits, then rises
+     as the signature flies into the header. */
+  .hero-copy { animation: fade-up 600ms var(--ease) both; }
+  :global(html.ident) .hero-copy { animation: none; opacity: 0; transform: translateY(12px); }
+  :global(html.ident.ident-reveal) .hero-copy { opacity: 1; transform: none; transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
+
+  .who { border-top: 0 !important; }
+  .who-grid { display: grid; gap: 36px; }
+  .who-copy h2 { margin-bottom: 22px; }
+  .who-copy .lede { max-width: 44ch; }
+  @media (min-width: 860px) {
+    .who-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(48px, 7vw, 110px); align-items: center; }
+  }
+
+  .feature-clip { display: grid; gap: 22px; }
+  .clip-cap { color: var(--ink-mid); margin-top: 10px; max-width: 40ch; }
+  @media (min-width: 860px) { .feature-clip { grid-template-columns: 2fr 1fr; align-items: end; } }
+
+  .music-home { display: grid; gap: 32px; }
+  .music-home h2 { margin-bottom: 14px; }
+  @media (min-width: 860px) { .music-home { grid-template-columns: 1fr 1.4fr; gap: 80px; align-items: start; } }
+
+  .offers-home { background: linear-gradient(to bottom, var(--paper), #fbe6a066 40%, var(--paper)); }
+  .centered { justify-content: center; text-align: center; }
+  .center { text-align: center; margin-top: 40px; }
+
+  .closing-grid { display: grid; gap: 40px; align-items: center; }
+  .closing-grid h2 { margin-bottom: 18px; }
+  @media (min-width: 860px) { .closing-grid { grid-template-columns: 1.5fr 1fr; } }
+</style>

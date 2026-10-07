@@ -1,0 +1,74 @@
+---
+// Every call to action is a sticky note from the cprice.studio gateway, never a
+// conventional button. Recipe copied from the gateway; see CLAUDE.md.
+interface Props {
+  href: string;
+  who: string;          // the big handwritten line
+  role?: string;        // the small handwritten line
+  label?: string;       // DM Mono caption under the note
+  face?: 'a' | 'b' | 'c' | 'd';
+  external?: boolean;
+}
+const { href, who, role, label, face = 'a', external = false } = Astro.props;
+---
+<a class="note-cta" href={href} {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
+  <span class="eggwrap">
+    <span class="note is-photo">
+      <img src={`/notes/note-blank-${face}.webp`} alt="" width="304" height="304" loading="lazy" decoding="async" />
+      <span class="hand">
+        <span class="who">{who}</span>
+        {role && <span class="role">{role}</span>}
+      </span>
+    </span>
+  </span>
+  {label && <span class="lbl">{label}</span>}
+</a>
+
+<style is:global>
+  @font-face { font-family: DashHand; src: url(/notes/RockSalt.ttf); font-display: swap; }
+  .note-cta { display: inline-flex; flex-direction: column; align-items: center; text-decoration: none; color: inherit; }
+  .note-cta .eggwrap { position: relative; width: var(--nw); height: var(--nw); display: block; }
+  .note-cta .note {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    padding: 12px 8px 16px;
+    background: linear-gradient(196deg, #ffffff8c, #fff0 34%), linear-gradient(170deg, #f6e9a0, #f0e28a 56%, #e7d678);
+    animation: bob 9s ease-in-out infinite;
+    transition: filter .25s;
+  }
+  .note-cta .note:after {
+    content: ""; position: absolute; right: 0; bottom: 0; width: 26px; height: 22px;
+    background: linear-gradient(135deg, #0000 46%, #a0965a4d 52%, #f7efae 56%);
+  }
+  .note-cta .note.is-photo { background: none; filter: drop-shadow(0 3px 4px rgba(104, 96, 48, .22)) drop-shadow(0 10px 16px rgba(104, 96, 48, .14)); }
+  .note-cta .note.is-photo:after { content: none; }
+  .note-cta .note.is-photo > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .note-cta .hand {
+    position: relative; z-index: 2; text-align: center; font-family: DashHand, cursive;
+    line-height: 1.28; transform: rotate(-2deg); color: #2e2a22;
+  }
+  .note-cta .hand .who { display: block; font-size: calc(var(--nw) * .099); white-space: nowrap; }
+  .note-cta .hand .role { display: block; font-size: calc(var(--nw) * .069); margin-top: calc(var(--nw) * .059); opacity: .85; white-space: nowrap; }
+
+  /* Tilt and stagger siblings so a row of notes never looks stamped. */
+  .note-cta:nth-child(5n+1) .eggwrap { transform: rotate(-2.4deg); }
+  .note-cta:nth-child(5n+2) .eggwrap { transform: rotate(1.6deg); }
+  .note-cta:nth-child(5n+3) .eggwrap { transform: rotate(-1deg); }
+  .note-cta:nth-child(5n+4) .eggwrap { transform: rotate(2.2deg); }
+  .note-cta:nth-child(5n+5) .eggwrap { transform: rotate(-1.8deg); }
+  .note-cta:nth-child(5n+1) .note { animation-duration: 9.5s; animation-delay: -1.2s; }
+  .note-cta:nth-child(5n+2) .note { animation-duration: 11s; animation-delay: -4.6s; }
+  .note-cta:nth-child(5n+3) .note { animation-duration: 8.4s; animation-delay: -2.9s; }
+  .note-cta:nth-child(5n+4) .note { animation-duration: 10.3s; animation-delay: -6.1s; }
+  .note-cta:nth-child(5n+5) .note { animation-duration: 9s; animation-delay: -3.4s; }
+  @keyframes bob { 0%, to { transform: translate3d(0, 8px, 0); } 50% { transform: translate3d(0, -8px, 0); } }
+
+  .note-cta:hover .note.is-photo, .note-cta:focus-visible .note.is-photo {
+    filter: drop-shadow(0 8px 10px rgba(40, 30, 20, .3)) drop-shadow(0 18px 26px rgba(40, 30, 20, .18)) brightness(1.04);
+  }
+  .note-cta:focus-visible { outline: 3px solid #00908a; outline-offset: 6px; border-radius: 3px; }
+  .note-cta .lbl {
+    margin-top: 18px; text-align: center; font-family: var(--mono); font-size: .72rem;
+    letter-spacing: .14em; text-transform: uppercase; color: #00726d;
+  }
+  @media (prefers-reduced-motion: reduce) { .note-cta .note { animation: none; } }
+</style>

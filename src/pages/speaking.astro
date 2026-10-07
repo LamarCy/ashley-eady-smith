@@ -1,0 +1,73 @@
+---
+import Base from '../layouts/Base.astro';
+import YouTubeLite from '../components/YouTubeLite.astro';
+import NoteCTA from '../components/NoteCTA.astro';
+import { getClips, CHANNEL_URL } from '../lib/clips';
+
+const clips = await getClips();
+---
+<Base title="Speaking" description="Clips of Ashley Eady Smith speaking: talks on courage, faith and who we are. Book Ashley to speak at your event, church, school or company.">
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="fade-up">
+          <span class="eyebrow">Speaking</span>
+          <h1>Words that give <em>courage</em></h1>
+        </div>
+        <a class="textlink" href={CHANNEL_URL} target="_blank" rel="noopener">Watch more on YouTube ↗</a>
+      </div>
+
+      {clips.length ? (
+        <ol class="rows clips">
+          {clips.map((c, i) => (
+            <li class="row clip">
+              <span class="row-num">{String(i + 1).padStart(2, '0')}</span>
+              <div class="clip-text">
+                <h2 class="row-title">{c.title}</h2>
+                <p class="meta">{[c.featured && 'Featured', c.event, c.year].filter(Boolean).join(' · ')}</p>
+                {c.caption && <p class="clip-cap">{c.caption}</p>}
+              </div>
+              <div class="clip-video"><YouTubeLite id={c.videoId} title={c.title} eager={i === 0} /></div>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p class="lede">New clips are on their way. <a href={CHANNEL_URL}>Watch on YouTube</a>.</p>
+      )}
+    </div>
+  </section>
+
+  <section class="section book">
+    <div class="wrap book-grid">
+      <div>
+        <h2>Bring Ashley to your <em>room</em></h2>
+        <p class="lede">Keynotes, church services, schools, conferences and company gatherings. Tell her about your event.</p>
+      </div>
+      <div class="notes">
+        <NoteCTA href="/contact?interest=speaking" who="Book Ashley" role="to speak" label="Speaking inquiries" face="b" />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .clip { display: grid; gap: 16px; padding: 28px 0; }
+  .clip .row-num { display: none; }
+  .clip-text .row-title { margin-bottom: 6px; }
+  .clip-cap { color: var(--ink-mid); margin: 10px 0 0; max-width: 46ch; }
+  /* Mobile: cards, video first. Desktop: numbered rows. */
+  .clip-video { order: -1; }
+  @media (min-width: 860px) {
+    .clip { grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1.25fr); gap: 28px; align-items: start; padding: 36px 0; }
+    .clip .row-num { display: block; text-align: right; padding-top: 6px; }
+    .clip-video { order: 0; }
+  }
+  @media (max-width: 859px) {
+    .clips { border-top: 0; }
+    .clip { border: 1px solid var(--rule); background: var(--off-white); padding: 0 0 20px; margin-bottom: 22px; }
+    .clip-text { padding: 0 18px; }
+  }
+  .book-grid { display: grid; gap: 40px; align-items: center; }
+  .book-grid h2 { margin-bottom: 16px; }
+  @media (min-width: 860px) { .book-grid { grid-template-columns: 1.5fr 1fr; } }
+</style>

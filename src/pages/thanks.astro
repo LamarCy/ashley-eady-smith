@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import NoteCTA from '../components/NoteCTA.astro';
+---
+<Base title="Thank you" description="Your note is on its way to Ashley.">
+  <meta name="robots" content="noindex" slot="head" />
+  <section class="section">
+    <div class="wrap thanks fade-up">
+      <span class="eyebrow">Sent</span>
+      <h1>Thank you. Your note is on its <em>way</em>.</h1>
+      <p class="lede" style="margin:22px 0 48px">Ashley will write back soon. In the meantime, there's more to see.</p>
+      <div class="notes" style="justify-content:flex-start">
+        <NoteCTA href="/speaking" who="Watch" role="Ashley speak" label="Speaking" face="a" />
+        <NoteCTA href="/music" who="Listen" role="to her songs" label="Music" face="c" />
+      </div>
+    </div>
+  </section>
+</Base>

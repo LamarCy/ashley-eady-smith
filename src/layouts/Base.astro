@@ -1,0 +1,195 @@
+---
+import '../styles/global.css';
+import SignatureIdent from '../components/SignatureIdent.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+}
+const { title, description, ogImage = '/og.jpg' } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isHome = path === '/';
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const og = new URL(ogImage, Astro.site);
+const fullTitle = isHome ? title : `${title} · Ashley Eady Smith`;
+
+const nav = [
+  { href: '/about', label: 'About' },
+  { href: '/speaking', label: 'Speaking' },
+  { href: '/art', label: 'Art' },
+  { href: '/music', label: 'Music' },
+  { href: '/shop', label: 'Shop' },
+  { href: '/contact', label: 'Contact' },
+];
+const socials = [{ href: 'https://www.youtube.com/@ashleysmith_esq', label: 'YouTube' }];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <meta name="theme-color" content="#f4f2ed" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Ashley Eady Smith" />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={og} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  {isHome && (
+    <script is:inline>
+      // First visit this session, on /: show the signature ident.
+      try {
+        if (!sessionStorage.getItem('aesIdentSeen')) {
+          var h = document.documentElement;
+          h.classList.add('ident');
+          if (matchMedia('(prefers-reduced-motion: reduce)').matches) h.classList.add('ident-rm');
+        }
+      } catch (e) {}
+    </script>
+  )}
+  <slot name="head" />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  {isHome && <SignatureIdent />}
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="site-mark" href="/" aria-label="Ashley Eady Smith, home">
+        <img src="/brand/signature.svg" alt="Ashley Eady Smith" width="140" height="64" />
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <ul class="nav-wide">
+          {nav.map((n) => (
+            <li><a href={n.href} aria-current={path === n.href ? 'page' : undefined}>{n.label}</a></li>
+          ))}
+        </ul>
+        <details class="nav-menu">
+          <summary class="mono">Menu</summary>
+          <ul>
+            {nav.map((n) => (
+              <li><a href={n.href} aria-current={path === n.href ? 'page' : undefined}>{n.label}</a></li>
+            ))}
+          </ul>
+        </details>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <a class="footer-mark" href="/" aria-label="Ashley Eady Smith, home">
+        <img src="/brand/signature.svg" alt="" width="200" height="91" loading="lazy" />
+      </a>
+      <p class="footer-line">Guidance, inspiration, <em>courage</em>, and light.</p>
+      <ul class="footer-links mono">
+        {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+        {socials.map((s) => <li><a href={s.href} target="_blank" rel="noopener">{s.label} ↗</a></li>)}
+      </ul>
+      <p class="mono made">Made with Durrell · <a href="https://cprice.studio" target="_blank" rel="noopener">C.PRICE</a></p>
+    </div>
+  </footer>
+
+  <a class="medallion" href="/" aria-label="Ashley Eady Smith, home">
+    <img src="/brand/signature.svg" alt="" width="40" height="18" />
+  </a>
+  <a class="to-top mono" href="#main" aria-label="Back to top">↑ Top</a>
+
+  <style is:global>
+    .site-header { position: relative; z-index: 20; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 18px; padding-bottom: 18px; }
+    .site-mark { display: block; flex: 0 0 auto; }
+    .site-mark img { width: 140px; height: auto; }
+
+    /* Mobile: a <details> disclosure. Desktop: always open, inline. */
+    .nav-menu summary {
+      list-style: none; cursor: pointer; padding: 10px 2px; color: var(--ink);
+      border-bottom: 1px solid var(--ink);
+    }
+    .nav-menu summary::-webkit-details-marker { display: none; }
+    .nav-menu ul, .nav-wide { list-style: none; margin: 0; padding: 0; }
+    .nav-wide { display: none; }
+    .nav-menu a, .nav-wide a {
+      font-family: var(--mono); font-size: .74rem; letter-spacing: var(--tracking-mono); text-transform: uppercase;
+      text-decoration: none; color: var(--ink); padding: 6px 0; display: inline-block; border-bottom: 1px solid transparent;
+    }
+    .nav-menu a:hover, .nav-wide a:hover { color: var(--porcelain-deep); }
+    .nav-menu a[aria-current='page'], .nav-wide a[aria-current='page'] { border-bottom-color: var(--porcelain); }
+    @media (max-width: 859px) {
+      .nav-menu[open] ul {
+        position: absolute; right: var(--gutter); left: var(--gutter); margin-top: 10px;
+        background: var(--off-white); border: 1px solid var(--rule); padding: 8px 18px; box-shadow: 0 18px 40px -20px rgba(20, 20, 18, .35);
+      }
+      .nav-menu[open] li + li { border-top: 1px solid var(--rule); }
+      .nav-menu[open] a { display: block; padding: 14px 0; }
+    }
+    @media (min-width: 860px) {
+      .nav-menu { display: none; }
+      .nav-wide { display: flex; gap: clamp(18px, 2.4vw, 34px); }
+    }
+
+    .site-footer { border-top: 1px solid var(--rule); padding: clamp(56px, 8vw, 96px) 0 110px; background: var(--off-white); }
+    .footer-inner { display: grid; gap: 22px; justify-items: start; }
+    .footer-mark img { width: 200px; height: auto; }
+    .footer-line { font-size: 1.3rem; margin: 0; }
+    .footer-line em { font-style: italic; color: var(--porcelain); }
+    .footer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 22px; }
+    .footer-links a { text-decoration: none; color: var(--ink-mid); display: inline-block; padding: 6px 0; }
+    .footer-links a:hover { color: var(--porcelain-deep); }
+    .made { color: var(--ink-mid); margin: 8px 0 0; }
+    .made a { color: var(--porcelain-deep); }
+
+    /* The signature on a paper disc, with the C.PRICE medallion's shadow. */
+    .medallion {
+      position: fixed; right: 20px; bottom: 20px; z-index: 40;
+      width: 54px; height: 54px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--paper); border: 1px solid rgba(20, 20, 18, .1);
+      box-shadow: var(--medallion-shadow); transition: transform .16s ease;
+    }
+    .medallion:hover { transform: scale(1.05); }
+    .medallion img { width: 44px; height: auto; }
+
+    /* The only glass element. */
+    .to-top {
+      position: fixed; left: 20px; bottom: 26px; z-index: 40;
+      padding: 9px 16px; text-decoration: none; color: var(--ink);
+      background: #ffffff80; border: 1px solid rgba(20, 20, 18, .12);
+      -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-radius: 999px;
+      opacity: 0; pointer-events: none; transition: opacity .3s, background .2s;
+    }
+    .to-top.show { opacity: 1; pointer-events: auto; }
+    .to-top:hover { background: #ffffffc0; color: var(--ink); }
+    @media (max-width: 560px) { .medallion { right: 14px; bottom: 14px; } .to-top { left: 14px; bottom: 20px; } }
+  </style>
+
+  <script>
+    const top = document.querySelector('.to-top');
+    if (top) {
+      const onScroll = () => top.classList.toggle('show', scrollY > innerHeight * 0.9);
+      addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
+    // Close the mobile menu after choosing a link or tapping elsewhere.
+    const menu = document.querySelector<HTMLDetailsElement>('.nav-menu');
+    document.addEventListener('click', (e) => {
+      if (menu?.open && !menu.contains(e.target as Node)) menu.open = false;
+    });
+  </script>
+</body>
+</html>

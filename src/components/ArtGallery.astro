@@ -1,0 +1,118 @@
+---
+// Masonry gallery of Ashley's drawings and paintings with a small dialog
+// lightbox (no library): prev/next buttons, arrow keys, Esc closes.
+// `strip` renders a plain three-up row for the Home page, without the lightbox.
+import { Image, getImage } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import NoteCTA from './NoteCTA.astro';
+
+interface Props { items: CollectionEntry<'art'>[]; strip?: boolean }
+const { items, strip = false } = Astro.props;
+const faces = ['a', 'b', 'c', 'd'] as const;
+
+const works = await Promise.all(
+  items.map(async (w) => ({
+    slug: w.id,
+    ...w.data,
+    full: w.data.image ? (await getImage({ src: w.data.image, width: 1600, format: 'webp' })).src : null,
+    meta: [w.data.year, w.data.medium, w.data.dimensions].join(' · '),
+  })),
+);
+---
+<div class:list={['gallery', { strip }]}>
+  {works.map((w, i) => (
+    <figure class="work">
+      <button type="button" class="work-open" data-i={i} aria-label={`View ${w.title} larger`} disabled={strip || undefined} tabindex={strip ? -1 : undefined}>
+        {w.image ? (
+          <Image src={w.image} alt={w.alt ?? `${w.title}, ${w.medium}, by Ashley Eady Smith`} widths={[400, 800, 1200]} sizes="(min-width: 860px) 33vw, (min-width: 560px) 50vw, 100vw" format="webp" />
+        ) : (
+          <span class="placeholder work-ph" style={`aspect-ratio:${['4/5', '1/1', '3/4'][i % 3]}`}>Artwork coming</span>
+        )}
+      </button>
+      <figcaption>
+        <span class="work-title">{w.title}</span>
+        <span class="meta">{w.meta}</span>
+      </figcaption>
+      {!strip && w.available && (
+        <div class="notes work-note">
+          <NoteCTA href={`/contact?interest=artwork&piece=${w.slug}`} who="Ask about" role="this piece" label="Available" face={faces[i % 4]} />
+        </div>
+      )}
+    </figure>
+  ))}
+</div>
+
+{!strip && (
+  <dialog class="lightbox" aria-label="Artwork viewer">
+    <div class="lb-stage"></div>
+    <p class="lb-cap"></p>
+    <button type="button" class="lb-btn lb-prev mono" aria-label="Previous artwork">← Prev</button>
+    <button type="button" class="lb-btn lb-next mono" aria-label="Next artwork">Next →</button>
+    <button type="button" class="lb-btn lb-close mono" aria-label="Close viewer">Close ✕</button>
+    <script type="application/json" class="lb-data" set:html={JSON.stringify(works.map((w) => ({ src: w.full, title: w.title, meta: w.meta, alt: w.alt ?? w.title })))} />
+  </dialog>
+)}
+
+<style is:global>
+  .gallery { columns: 1; column-gap: clamp(20px, 3vw, 36px); }
+  @media (min-width: 560px) { .gallery { columns: 2; } }
+  @media (min-width: 860px) { .gallery { columns: 3; } }
+  .gallery.strip { columns: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: clamp(20px, 3vw, 36px); align-items: start; }
+  .work { break-inside: avoid; margin: 0 0 clamp(28px, 4vw, 44px); }
+  .strip .work { margin: 0; }
+  .work-open { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+  .work-open:disabled { cursor: default; }
+  .work-open img, .work-ph { width: 100%; height: auto; display: flex; transition: filter .25s; }
+  .work-open:hover img { filter: brightness(1.04); }
+  .work-open:hover .work-ph { background: #f8dc85; }
+  .work figcaption { display: grid; gap: 2px; margin-top: 12px; }
+  .work-title { font-style: italic; font-size: 1.15rem; }
+  .work-note { justify-content: flex-start; margin-top: 22px; }
+
+  .lightbox { border: 0; padding: 0; margin: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; background: rgba(244, 242, 237, .97); }
+  .lightbox::backdrop { background: rgba(17, 17, 16, .4); }
+  .lightbox[open] { display: grid; grid-template-rows: 1fr auto; place-items: center; padding: 64px var(--gutter) 24px; }
+  .lb-stage { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; min-height: 0; }
+  .lb-stage img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .lb-stage .placeholder { width: min(80vw, 520px); aspect-ratio: 4 / 5; }
+  .lb-cap { text-align: center; margin: 14px 0 0; }
+  .lb-cap em { font-size: 1.2rem; }
+  .lb-btn { position: absolute; background: none; border: 0; padding: 12px; cursor: pointer; color: var(--ink); }
+  .lb-btn:hover { color: var(--porcelain-deep); }
+  .lb-close { top: 12px; right: 12px; }
+  .lb-prev { left: 8px; top: 50%; }
+  .lb-next { right: 8px; top: 50%; }
+  @media (max-width: 559px) { .lb-prev, .lb-next { top: auto; bottom: 8px; } }
+</style>
+
+<script>
+  const dlg = document.querySelector<HTMLDialogElement>('.lightbox');
+  if (dlg) {
+    const data: { src: string | null; title: string; meta: string; alt: string }[] = JSON.parse(dlg.querySelector('.lb-data')!.textContent || '[]');
+    const stage = dlg.querySelector<HTMLElement>('.lb-stage')!;
+    const cap = dlg.querySelector<HTMLElement>('.lb-cap')!;
+    let cur = 0;
+    const show = (i: number) => {
+      cur = (i + data.length) % data.length;
+      const w = data[cur];
+      stage.innerHTML = w.src ? `<img src="${w.src}" alt="">` : '<span class="placeholder">Artwork coming</span>';
+      const img = stage.querySelector('img');
+      if (img) img.alt = w.alt;
+      cap.innerHTML = '';
+      const t = document.createElement('em'); t.textContent = w.title;
+      const m = document.createElement('span'); m.className = 'meta'; m.textContent = `  ${w.meta}`;
+      cap.append(t, document.createElement('br'), m);
+    };
+    document.querySelectorAll<HTMLButtonElement>('.work-open').forEach((b) =>
+      b.addEventListener('click', () => { show(Number(b.dataset.i)); dlg.showModal(); }),
+    );
+    dlg.querySelector('.lb-prev')!.addEventListener('click', () => show(cur - 1));
+    dlg.querySelector('.lb-next')!.addEventListener('click', () => show(cur + 1));
+    dlg.querySelector('.lb-close')!.addEventListener('click', () => dlg.close());
+    dlg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(cur - 1);
+      if (e.key === 'ArrowRight') show(cur + 1);
+    });
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  }
+</script>

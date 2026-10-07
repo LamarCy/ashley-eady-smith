@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import Portrait from '../components/Portrait.astro';
+import NoteCTA from '../components/NoteCTA.astro';
+---
+<Base title="About" description="Ashley Eady Smith gives guidance, inspiration, courage and light: as a speaker, in one-on-one Encouragement Sessions, and through her drawing, painting and singing.">
+  <section class="section about">
+    <div class="wrap about-grid">
+      <div class="about-portrait"><Portrait eager sizes="(min-width: 860px) 40vw, 100vw" /></div>
+      <div class="about-copy fade-up">
+        <span class="eyebrow">About Ashley</span>
+        <h1>Guidance, inspiration, <em>courage</em>, and light.</h1>
+        <!-- ASHLEY TO REVIEW: placeholder bio, written from the brief. Replace with Ashley's own words. -->
+        <div class="prose">
+          <p class="lede">I have always been the person people come to when they need encouragement. A friend on a hard day, a colleague before a big decision, a stranger who just needed someone to say, "You can do this."</p>
+          <p>That is what I give, and it comes naturally: guidance when the way is unclear, inspiration when the spark has gone quiet, courage when the next step feels too big, and light for whatever is dark.</p>
+          <p>During COVID, when so many of us were isolated and afraid, I began offering one-on-one Encouragement Sessions. What started as conversations with a few people became the heart of my work. Today I also speak to rooms large and small, and lead retreats for groups and teams.</p>
+          <p>I also draw, paint and sing. Making things with my hands and my voice is how I fill back up, and it all comes from the same place.</p>
+        </div>
+        <blockquote class="pullquote">"The signature of my soul: guidance, inspiration, courage, and light."</blockquote>
+        <div class="callout">
+          <p><strong>What people come to me for:</strong> a steady voice, honest encouragement, and a way forward. Whether it's a keynote, an hour together, or a weekend away, you'll leave lighter than you came.</p>
+        </div>
+        <div class="notes about-notes">
+          <NoteCTA href="/shop" who="Work with" role="Ashley" label="Sessions · Retreats · POP" face="b" />
+          <NoteCTA href="/contact?interest=speaking" who="Book a talk" role="speaking" label="Speaking" face="c" />
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .about-grid { display: grid; gap: 40px; }
+  .about-copy h1 { margin-bottom: 28px; }
+  .about-copy .prose { margin-bottom: 36px; }
+  .pullquote { margin: 0 0 32px; }
+  .callout { margin-bottom: 48px; max-width: 62ch; }
+  .about-notes { justify-content: flex-start; }
+  @media (min-width: 860px) {
+    .about-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(48px, 7vw, 110px); align-items: start; }
+    .about-portrait { position: sticky; top: 32px; }
+  }
+</style>

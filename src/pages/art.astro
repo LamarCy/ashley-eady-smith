@@ -1,0 +1,21 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ArtGallery from '../components/ArtGallery.astro';
+
+const works = (await getCollection('art')).sort((a, b) => a.data.order - b.data.order);
+---
+<Base title="Art" description="Drawings and paintings by Ashley Eady Smith. Ask about available pieces.">
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="fade-up">
+          <span class="eyebrow">Art</span>
+          <h1>Drawings &amp; <em>paintings</em></h1>
+          <p class="lede" style="margin-top:18px">Made by hand, from the same place as everything else. Tap any piece to see it larger.</p>
+        </div>
+      </div>
+      <ArtGallery items={works} />
+    </div>
+  </section>
+</Base>

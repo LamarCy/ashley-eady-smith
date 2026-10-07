@@ -1,0 +1,37 @@
+/* Design tokens. Inherited from cprice.studio; palette is Sanzo Wada,
+   Dictionary of Color Combinations no. 193. */
+:root {
+  /* ground */
+  --paper: #f4f2ed;
+  --off-white: #f9f9f7;
+  --ink: #111110;
+  --ink-mid: #444440;
+  --ink-light: #888882;
+  --rule: #d6d3cc;
+
+  /* no. 193 */
+  --naples: #fbe6a0;          /* washes, highlights, hover fills. Never text. */
+  --grenadine: #f48067;       /* fills only: pull-quote rule, ident glow, hover. Never text (2.3:1). */
+  --porcelain: #00908a;       /* italic headline word, callout rule, focus rings */
+  --porcelain-deep: #00726d;  /* small text: links, mono labels (5.2:1 on paper) */
+  --porcelain-tint: rgba(0, 144, 138, 0.06);
+
+  /* type */
+  --serif: 'EB Garamond', Garamond, 'Times New Roman', serif;
+  --mono: 'DM Mono', ui-monospace, Menlo, monospace;
+  --hand: DashHand, 'Rock Salt', cursive;
+  --h1: clamp(2.6rem, 1.6rem + 4.4vw, 5rem);
+  --h2: clamp(1.9rem, 1.3rem + 2.4vw, 3rem);
+  --tracking-mono: 0.14em;
+
+  /* layout */
+  --gutter: clamp(16px, 4vw, 48px);
+  --max: 1180px;
+  --ease: cubic-bezier(.4, 0, .2, 1);
+
+  /* sticky notes */
+  --nw: clamp(120px, 15.5vw, 152px);
+
+  /* C.PRICE medallion shadow */
+  --medallion-shadow: 0 10px 24px rgba(20, 20, 18, .28), inset 0 1px 6px rgba(255, 255, 255, .55), inset 0 -6px 12px rgba(20, 20, 18, .08);
+}
