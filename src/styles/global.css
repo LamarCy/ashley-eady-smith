@@ -39,7 +39,7 @@ a:hover { color: var(--porcelain-deep); }
 .section + .section { border-top: 1px solid var(--rule); }
 
 .mono, .eyebrow, .meta {
-  font-family: var(--mono); font-size: .74rem; font-weight: 400;
+  font-family: var(--mono); font-size: .76rem; font-weight: 400;
   letter-spacing: var(--tracking-mono); text-transform: uppercase;
 }
 .eyebrow { color: var(--porcelain-deep); margin: 0 0 18px; display: block; }
@@ -50,7 +50,7 @@ a:hover { color: var(--porcelain-deep); }
 
 .section-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: clamp(28px, 4vw, 48px); flex-wrap: wrap; }
 .textlink {
-  font-family: var(--mono); font-size: .74rem; letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  font-family: var(--mono); font-size: .76rem; letter-spacing: var(--tracking-mono); text-transform: uppercase;
   color: var(--porcelain-deep); text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 2px;
 }
 .textlink:hover { color: var(--ink); }
@@ -74,13 +74,13 @@ a:hover { color: var(--porcelain-deep); }
 .placeholder {
   display: flex; align-items: center; justify-content: center; text-align: center;
   background: var(--naples); color: var(--ink-mid); padding: 16px;
-  font-family: var(--mono); font-size: .74rem; letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  font-family: var(--mono); font-size: .76rem; letter-spacing: var(--tracking-mono); text-transform: uppercase;
 }
 
 /* Numbered list rows, as on cprice.studio/ashley. */
 .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); counter-reset: row; }
 .row { border-bottom: 1px solid var(--rule); }
-.row-num { font-family: var(--mono); font-size: .76rem; color: var(--ink-light); }
+.row-num { font-family: var(--mono); font-size: .76rem; color: var(--ink-mid); }
 .row-title { font-family: var(--serif); font-size: clamp(1.2rem, 1.05rem + .5vw, 1.45rem); margin: 0 0 4px; }
 
 /* Note rows: sticky-note CTAs laid out in a row. */
