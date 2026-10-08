@@ -82,7 +82,10 @@ const works = await Promise.all(
   .lb-close { top: 12px; right: 12px; }
   .lb-prev { left: 8px; top: 50%; }
   .lb-next { right: 8px; top: 50%; }
-  @media (max-width: 559px) { .lb-prev, .lb-next { top: auto; bottom: 8px; } }
+  @media (max-width: 559px) {
+    .lightbox[open] { padding-bottom: 64px; }
+    .lb-prev, .lb-next { top: auto; bottom: 8px; }
+  }
 </style>
 
 <script>
