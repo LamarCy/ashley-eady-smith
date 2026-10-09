@@ -4,6 +4,18 @@ Ashley Eady Smith: speaker, encourager, artist and singer. Astro 5 static site o
 
 Every change is one small file. Edit it on GitHub (phone or laptop), commit to `main`, and Netlify rebuilds the site in about a minute.
 
+## Editing from anywhere
+
+Everything lives in this GitHub repo; nothing depends on the Mac mini. Netlify rebuilds the live site about a minute after any commit to `main`.
+
+- **Phone:** GitHub app (or github.com in the browser) → `LamarCy/ashley-eady-smith` → open a file → pencil icon → edit → **Commit changes**. Best for prices, words, a new clip or track.
+- **Any laptop, no installs:** on the repo page, press `.` to open the full editor at github.dev. Edit several files, then commit from the Source Control panel.
+- **With Claude:** start a session at claude.ai/code on this repo and describe the change. Claude reads `CLAUDE.md` for the design rules and where everything lives, makes the edit, and pushes; Netlify deploys.
+- **Try before it's live:** commit to a new branch and open a pull request. Netlify posts a preview link on the PR, and merging publishes it.
+- **Something broke?** Netlify → Deploys → pick the last good deploy → **Publish deploy** rolls back instantly. Then fix it in the repo.
+
+Photos: upload them on github.com with **Add file → Upload files** into `src/assets/` (portrait, sky) or `src/assets/art/` (artwork), then reference them as described below.
+
 ## Add a speech clip
 
 Clips from Ashley's YouTube channel ([@ashleysmith_esq](https://www.youtube.com/@ashleysmith_esq)) appear on /speaking automatically at each build, newest first. To feature, rename or hide one, add a file in `src/content/clips/`:

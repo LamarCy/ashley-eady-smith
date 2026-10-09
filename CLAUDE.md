@@ -74,3 +74,15 @@ Brand assets: `npm run brand` regenerates `public/favicon.svg`, `favicon-32.png`
 ## Verify
 
 `npm run build` then `npx astro preview --port 4332`. The Claude browser pane may be hidden, which freezes animations; capture the ident with headless Playwright instead. Lighthouse (mobile) was 95–100 on every page with the ident active.
+Flow boards and the flows PDF: `npm run flows` (first run on a new machine: `npx playwright install chromium`). It captures from the live site (`FLOWS_URL` overrides) and writes `docs/flows/Site Flows.pdf`. Ident frames are keyed to animation progress, not the clock, because network timing shifts the schedule.
+
+## Operations (where things live)
+
+- **Live:** https://ashleyeadysmith.com. `www` and `http` 301 to the apex. https://ashley-eady-smith.netlify.app also serves.
+- **Hosting:** Netlify site `ashley-eady-smith` (team lamarcy, Durrell's account), linked to this repo through the Netlify GitHub App. Every push to `main` deploys to production; pull requests get deploy previews. Build `npm run build`, publish `dist`, Node 20.
+- **Domain:** registered at Namecheap (BasicDNS) on 2026-10-09. `A @ 75.2.60.5`, `CNAME www → ashley-eady-smith.netlify.app`. HTTPS is Netlify's Let's Encrypt certificate (apex + www) and renews itself.
+- **Forms:** Netlify form detection had to be switched on (new sites ship with `ignore_html_forms: true`). The `contact` form is registered; submissions are in Netlify → Forms. Email notifications are set in the Netlify UI.
+- **Replay link:** `/?intro` plays the ident on every load.
+- **Brief:** `docs/brief/` holds the site brief PDF and the original Sprint 1 prompt. Sprints 2–4 are in the brief: Ashley's real content (Oct 9–12), Stripe + booking (week of Oct 12), hand-off (week of Oct 19).
+- **Known gaps:** the music YouTube ids `EdFSDXgwF4U` and `sIVn7xz0HoY` are dead (oEmbed 404), so Momma Gone plays the MP3 and Sega on a Saturday has no recording yet. Stripe links are `https://buy.stripe.com/PLACEHOLDER`. Portrait, bio and artwork are placeholders (`ASHLEY TO REVIEW`).
+- **Never** commit secrets. Domain, DNS, billing and Stripe changes need Durrell's say-so.
