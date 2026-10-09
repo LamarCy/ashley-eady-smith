@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// Domain is her full name .com (brief R1). Confirm before DNS.
+// Her full name .com (brief R1). Registered at Namecheap 2026-10-09; DNS points at Netlify.
 export default defineConfig({
   site: 'https://ashleyeadysmith.com',
   integrations: [sitemap({ filter: (page) => !/\/(thanks|404)\/?$/.test(page) })],

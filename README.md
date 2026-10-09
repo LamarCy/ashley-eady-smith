@@ -86,4 +86,4 @@ npm run dev
 
 ## How Netlify deploys
 
-`netlify.toml` sets the build command `npm run build` and publish directory `dist`. Connect the GitHub repo in Netlify once (Add new site → Import from Git → `LamarCy/ashley-eady-smith`). After that, every push to `main` deploys, and pull requests get preview URLs. Point the domain's DNS at Netlify under Domain management.
+`netlify.toml` sets the build command `npm run build` and publish directory `dist`. The Netlify site `ashley-eady-smith` is connected to this repo: every push to `main` deploys, and pull requests get preview URLs. The domain ashleyeadysmith.com is registered at Namecheap with DNS pointing at Netlify (`A @ 75.2.60.5`, `CNAME www → ashley-eady-smith.netlify.app`); HTTPS is Netlify's Let's Encrypt certificate and renews automatically.
