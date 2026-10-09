@@ -41,7 +41,7 @@ Props: `href`, `who` (big hand line), `role` (small hand line), `label` (DM Mono
 
 ## SignatureIdent (`src/components/SignatureIdent.astro`)
 
-Only on `/`, only when `sessionStorage.aesIdentSeen` is unset. A head script in `Base.astro` adds `html.ident` (and `html.ident-rm` for reduced motion) before first paint; without that class the overlay is `display:none`, so crawlers and no-JS visitors get the page directly and the hero image paints immediately underneath (LCP unaffected).
+Only on `/`, only when `sessionStorage.aesIdentSeen` is unset, or always when the URL has `?intro` (the replay link for demos). A head script in `Base.astro` adds `html.ident` (and `html.ident-rm` for reduced motion) before first paint; without that class the overlay is `display:none`, so crawlers and no-JS visitors get the page directly and the hero image paints immediately underneath (LCP unaffected).
 
 **Don't give the overlay element the class `ident`.** `<html>` carries that class, so a `.ident { display:none }` rule hides the whole page. The overlay is `.ident-overlay`.
 

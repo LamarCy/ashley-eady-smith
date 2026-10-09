@@ -49,8 +49,9 @@ const socials = [{ href: 'https://www.youtube.com/@ashleysmith_esq', label: 'You
   {isHome && (
     <script is:inline>
       // First visit this session, on /: show the signature ident.
+      // /?intro replays it on every load (for showing it to people).
       try {
-        if (!sessionStorage.getItem('aesIdentSeen')) {
+        if (/[?&]intro\b/.test(location.search) || !sessionStorage.getItem('aesIdentSeen')) {
           var h = document.documentElement;
           h.classList.add('ident');
           if (matchMedia('(prefers-reduced-motion: reduce)').matches) h.classList.add('ident-rm');

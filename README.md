@@ -71,6 +71,10 @@ Edit `src/content/offers/pop.md`, `encouragement-sessions.md` or `retreats.md`. 
 
 Page copy lives in `src/pages/*.astro`. Search for `ASHLEY TO REVIEW` to find every placeholder.
 
+## Replay the opening
+
+The signature opening plays once per visit. To show it to someone again, open **https://ashleyeadysmith.com/?intro**; it plays on every load of that link.
+
 ## Contact form
 
 Netlify Forms handles `/contact` (no backend). Submissions appear in Netlify → Forms → contact. Turn on email notifications there.
