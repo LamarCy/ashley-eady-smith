@@ -8,4 +8,4 @@ cta_url: "/contact?interest=retreat"
 kind: retreat
 order: 3
 ---
-Guidance, inspiration and encouragement for a whole room: teams, congregations, and circles of friends. <!-- ASHLEY TO REVIEW: formats, group sizes -->
+Guidance, inspiration and encouragement for a whole room: teams, organizations, and circles of friends. <!-- ASHLEY TO REVIEW: formats, group sizes -->
