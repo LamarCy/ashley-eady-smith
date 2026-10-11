@@ -6,6 +6,10 @@ export const CHANNEL_ID = 'UCNWaQf6xlGaYAOry-ZCb9OA';
 export const CHANNEL_URL = 'https://www.youtube.com/@ashleysmith_esq';
 const FEED = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
 
+// Feed videos to keep off /speaking, matched by title (case-insensitive).
+// Use this when the video id isn't known; otherwise add a clips/*.md with hidden: true.
+const HIDDEN_TITLES = [/head,?\s*(and\s+)?not\s+the\s+tail/i];
+
 export interface Clip {
   videoId: string;
   title: string;
@@ -49,6 +53,7 @@ export function getClips(): Promise<Clip[]> {
     for (const c of byId.values()) {
       const o = overrides.get(c.videoId);
       if (o?.hidden) continue;
+      if (HIDDEN_TITLES.some((re) => re.test(c.title))) continue;
       clips.push({
         ...c,
         title: o?.title ?? c.title,
