@@ -1,18 +1,19 @@
 ---
-// Ashley's portrait. Drop a photo at src/assets/portrait.jpg and it is used
-// everywhere; until then a 4:5 Naples Yellow placeholder holds the space.
+// Ashley's portrait. Pass `src` to use a specific photo (About does), or drop one
+// at src/assets/portrait.jpg to use it wherever no `src` is given; until then a
+// 4:5 Naples Yellow placeholder holds the space.
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
-interface Props { class?: string; eager?: boolean; sizes?: string }
-const { class: cls = '', eager = false, sizes = '(min-width: 860px) 40vw, 100vw' } = Astro.props;
+interface Props { class?: string; eager?: boolean; sizes?: string; src?: ImageMetadata; alt?: string }
+const { class: cls = '', eager = false, sizes = '(min-width: 860px) 40vw, 100vw', src, alt = 'Ashley Eady Smith' } = Astro.props;
 const found = import.meta.glob<{ default: ImageMetadata }>('../assets/portrait.{jpg,jpeg,png,webp}', { eager: true });
-const portrait = Object.values(found)[0]?.default;
+const portrait = src ?? Object.values(found)[0]?.default;
 ---
 {portrait ? (
   <Image
     src={portrait}
-    alt="Ashley Eady Smith"
+    alt={alt}
     class:list={['portrait', cls]}
     widths={[480, 800, 1200, 1600]}
     sizes={sizes}

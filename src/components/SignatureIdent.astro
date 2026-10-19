@@ -5,9 +5,13 @@
 // Without that class it is display:none, so crawlers and no-JS visitors get the
 // page as-is and the hero underneath is never blocked.
 //
-// Beats: 0 paper + fog (0–0.3s) · 1 draw-on through a pen-order mask (0.3–2.5s)
-// · 2 hold with a grenadine glow (2.5–2.9s) · 3 FLIP into the header slot while
-// the overlay fades and the hero rises (2.9–3.4s). Any click/tap/key skips to 3.
+// The ident doubles as the loading indicator: it never leaves before the page
+// has loaded (window load + fonts), and never stays longer than MAX_MS.
+//
+// Beats: 0 paper + fog (0–0.3s) · 1 slow draw-on through a pen-order mask
+// (0.3–3.9s) · 2 hold with a grenadine glow (3.9–4.3s); if the page is still
+// loading, the glow keeps breathing until it is · 3 FLIP into the header slot
+// while the overlay fades and the hero rises (0.5s). Any click/tap/key skips to 3.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { toPath, STROKE } from '../../scripts/centerline.mjs';
@@ -115,7 +119,9 @@ const pen = toPath();
       } else {
         sig.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, fill: 'forwards' });
       }
-      glow.animate([{ opacity: getComputedStyle(glow).opacity }, { opacity: 0 }], { duration: 300, fill: 'forwards' });
+      const glowNow = getComputedStyle(glow).opacity;
+      glow.getAnimations().forEach((a) => a.cancel());
+      glow.animate([{ opacity: glowNow }, { opacity: 0 }], { duration: 300, fill: 'forwards' });
       fog.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, easing: ease, fill: 'forwards' });
       el.querySelector('.ident-skip')?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' });
       el.animate([{ backgroundColor: '#f4f2edff' }, { backgroundColor: '#f4f2ed00' }], { duration: 500, easing: ease, fill: 'forwards' })
@@ -135,24 +141,44 @@ const pen = toPath();
     el.addEventListener('pointerdown', skip);
     addEventListener('keydown', skip, true);
 
+    // Loading gate: resolves on window load + fonts, or at MAX_MS regardless.
+    const MAX_MS = 9000;
+    const loaded = Promise.race([
+      Promise.all([
+        document.readyState === 'complete' ? Promise.resolve() : new Promise((r) => addEventListener('load', r, { once: true })),
+        document.fonts?.ready ?? Promise.resolve(),
+      ]),
+      new Promise((r) => setTimeout(r, MAX_MS)),
+    ]);
+    const minTime = (ms: number) => new Promise((r) => at(ms, () => r(null)));
+
     if (reduced) {
+      // Reduced motion: fade in, hold until loaded (at least 1s), fade out.
       sig.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, fill: 'forwards' });
-      at(1000, leaveReduced);
+      Promise.all([loaded, minTime(1000)]).then(leaveReduced);
       return;
     }
 
-    // Beat 1: write the signature.
+    // Beat 1: write the signature, slowly and at an even pace, like a pen.
+    const DRAW_MS = 3600;
     const len = pen.getTotalLength();
     pen.style.strokeDasharray = `${len}`;
     pen.style.strokeDashoffset = `${len}`;
     at(300, () => {
-      draw = pen.animate([{ strokeDashoffset: `${len}px` }, { strokeDashoffset: '0px' }], { duration: 2200, easing: ease, fill: 'forwards' });
+      draw = pen.animate([{ strokeDashoffset: `${len}px` }, { strokeDashoffset: '0px' }], { duration: DRAW_MS, easing: 'cubic-bezier(.37,0,.63,1)', fill: 'forwards' });
     });
-    // Beat 2: hold, a faint grenadine bloom behind the ink.
-    at(2500, () => {
+    // Beat 2: hold with a faint grenadine bloom. If the page is still loading,
+    // the bloom keeps breathing until it is, then the signature flies home.
+    at(300 + DRAW_MS, () => {
       ink.removeAttribute('mask');
-      glow.animate([{ opacity: 0 }, { opacity: 0.18, offset: 0.5 }, { opacity: 0 }], { duration: 400, easing: 'ease-in-out', fill: 'forwards' });
+      let ready = false;
+      loaded.then(() => (ready = true));
+      const bloom = glow.animate([{ opacity: 0 }, { opacity: 0.18, offset: 0.5 }, { opacity: 0 }], { duration: 400, easing: 'ease-in-out', fill: 'forwards' });
+      bloom.finished.then(() => {
+        if (ready) return leave();
+        glow.animate([{ opacity: 0 }, { opacity: 0.18, offset: 0.5 }, { opacity: 0 }], { duration: 1600, easing: 'ease-in-out', iterations: Infinity });
+        loaded.then(leave);
+      }, () => {});
     });
-    at(2900, leave);
   }
 </script>

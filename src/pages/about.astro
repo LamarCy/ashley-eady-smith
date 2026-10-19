@@ -1,12 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import Portrait from '../components/Portrait.astro';
+import aboutPortrait from '../assets/portrait-about.jpg';
 import NoteCTA from '../components/NoteCTA.astro';
 ---
 <Base title="About" description="Ashley Eady Smith gives guidance, inspiration, courage and light: as a speaker, in one-on-one Encouragement Sessions, and through her drawing, painting and singing.">
   <section class="section about">
     <div class="wrap about-grid">
-      <div class="about-portrait"><Portrait eager sizes="(min-width: 860px) 40vw, 100vw" /></div>
+      <div class="about-portrait"><Portrait eager src={aboutPortrait} alt="Ashley Eady Smith speaking at a podium" sizes="(min-width: 860px) 40vw, 100vw" /></div>
       <div class="about-copy fade-up">
         <span class="eyebrow">About Ashley</span>
         <h1>Guidance, inspiration, <em>courage</em>, and light.</h1>

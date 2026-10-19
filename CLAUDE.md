@@ -48,11 +48,11 @@ Only on `/`, only when `sessionStorage.aesIdentSeen` is unset, or always when th
 | Beat | Time | What happens |
 |---|---|---|
 | 0 | 0–0.3s | paper `#f4f2ed` + four gateway fog spans (radial white, `blur(44px)`, `drift-a/b` 24–36s) |
-| 1 | 0.3–2.5s | filled signature path revealed through a `<mask>` holding one stroked centerline (width 110, round caps/joins); `stroke-dashoffset` animates from `getTotalLength()` to 0 over 2.2s, `cubic-bezier(.4,0,.2,1)` |
-| 2 | 2.5–2.9s | mask removed (full ink guaranteed); Grenadine radial glow blooms to 18% and fades |
-| 3 | 2.9–3.4s | FLIP: big signature translates and scales into `.site-mark img` (140px) while fog and paper fade; hero copy fades up (600ms). Then the overlay is removed and `aesIdentSeen = "1"` is set |
+| 1 | 0.3–3.9s | filled signature path revealed through a `<mask>` holding one stroked centerline (width 110, round caps/joins); `stroke-dashoffset` animates from `getTotalLength()` to 0 over 3.6s at an even pen pace, `cubic-bezier(.37,0,.63,1)` |
+| 2 | 3.9–4.3s+ | mask removed (full ink guaranteed); Grenadine radial glow blooms to 18% and fades. **Loading gate:** if the page hasn't finished loading (window `load` + `document.fonts.ready`), the glow keeps breathing (1.6s cycle) until it has. Hard cap `MAX_MS` = 9s, so a stuck request never blocks the site |
+| 3 | +0.5s | FLIP: big signature translates and scales into `.site-mark img` (140px) while fog and paper fade; hero copy fades up (600ms). Then the overlay is removed and `aesIdentSeen = "1"` is set. On a fast connection the whole splash takes about 4.9s |
 
-Skip: any pointerdown or keydown jumps to beat 3. Reduced motion: no draw-on and no FLIP; fade in 600ms, hold 400ms, fade out 400ms (about 1.4s).
+Skip: any pointerdown or keydown jumps to beat 3. Reduced motion: no draw-on and no FLIP; fade in 600ms, hold until loaded (at least 1s, same 9s cap), fade out 400ms.
 
 The centerline lives in `scripts/centerline.mjs` (66 hand-traced points in writing order, Catmull-Rom → cubic Béziers). `node scripts/verify-centerline.mjs out.png` reports ink coverage (currently 100%) and writes an overlay. If the signature art changes, re-trace with `node scripts/trace-signature.mjs`, then re-check coverage.
 
