@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Portrait from '../components/Portrait.astro';
+import aboutPortrait from '../assets/portrait-about.jpg';
 import YouTubeLite from '../components/YouTubeLite.astro';
 import ArtGallery from '../components/ArtGallery.astro';
 import TrackList from '../components/TrackList.astro';
@@ -46,7 +47,7 @@ const offers = (await getCollection('offers')).sort((a, b) => a.data.order - b.d
 
   <section class="section who">
     <div class="wrap who-grid">
-      <div class="who-portrait"><Portrait sizes="(min-width: 860px) 36vw, 100vw" /></div>
+      <div class="who-portrait"><Portrait src={aboutPortrait} alt="Ashley Eady Smith speaking at a podium" sizes="(min-width: 860px) 36vw, 100vw" /></div>
       <div class="who-copy">
         <span class="eyebrow">Who I am</span>
         <!-- ASHLEY TO REVIEW -->
