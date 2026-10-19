@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import NoteCTA from '../components/NoteCTA.astro';
 
@@ -25,8 +26,11 @@ const hand = {
       </div>
       <ol class="rows offers">
         {offers.map((o, i) => (
-          <li class="row offer">
+          <li class:list={['row', 'offer', { 'has-image': o.data.image }]}>
             <span class="row-num">{String(i + 1).padStart(2, '0')}</span>
+            {o.data.image && (
+              <Image class="offer-img" src={o.data.image} alt={o.data.image_alt ?? `${o.data.name} cover`} widths={[o.data.image.width]} sizes="200px" format="webp" />
+            )}
             <div class="offer-text">
               <h2 class="offer-name">{o.data.name}</h2>
               <p class="offer-tag">{o.data.tagline}</p>
@@ -59,11 +63,13 @@ const hand = {
   .price { color: var(--porcelain-deep); }
   .offer-body { color: var(--ink-mid); max-width: 52ch; margin-top: 14px; }
   .offer-note { justify-content: flex-start; }
+  .offer-img { width: 200px; height: auto; aspect-ratio: 1; object-fit: cover; box-shadow: 0 14px 30px -18px rgba(104, 96, 48, .55); }
   .fine { margin-top: 32px; }
   .fine a { color: var(--porcelain-deep); }
   @media (min-width: 860px) {
     .offer { grid-template-columns: 44px minmax(0, 1fr) 260px; gap: 32px; align-items: center; }
     .offer .row-num { display: block; text-align: right; align-self: start; padding-top: 14px; }
+    .offer.has-image { grid-template-columns: 44px 200px minmax(0, 1fr) 260px; }
     .offer-note { justify-content: center; }
   }
 </style>

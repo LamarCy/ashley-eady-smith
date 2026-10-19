@@ -51,9 +51,10 @@ const music = defineCollection({
 });
 
 // The three offers. Prices are display strings so "$12" or "60 min" both work.
+// `image` (optional) is a cover or product photo shown beside the offer on /shop.
 const offers = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/offers' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     name: z.string(),
     tagline: z.string(),
     price: z.string(),
@@ -61,6 +62,8 @@ const offers = defineCollection({
     cta_label: z.string(),
     cta_url: z.string(),
     kind: z.enum(['product', 'session', 'retreat']),
+    image: image().optional(),   // product photo / cover, shown on /shop
+    image_alt: z.string().optional(),
     order: z.number().default(0),
   }),
 });
